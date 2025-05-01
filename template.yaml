@@ -4,7 +4,6 @@ Description: |
   python3.13
   Sample SAM Template for psychometric-test-lambda
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 10
@@ -12,11 +11,27 @@ Globals:
 
 Resources:
   myPsychometricTestFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       Architectures:
         - x86_64
+
+      # —————— Variables de entorno ——————
+      Environment:
+        Variables:
+          BUCKET_NAME: psychometrictest
+
+      # —————— Permisos para S3 GetObject ——————
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource:
+                - arn:aws:s3:::psychometrictest/*
+
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./hello_world
@@ -26,6 +41,7 @@ Outputs:
   myPsychometricTestFunction:
     Description: Hello World Lambda Function ARN
     Value: !GetAtt myPsychometricTestFunction.Arn
+
   myPsychometricTestFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
     Value: !GetAtt myPsychometricTestFunctionRole.Arn
