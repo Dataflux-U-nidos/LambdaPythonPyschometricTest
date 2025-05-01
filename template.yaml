@@ -22,7 +22,7 @@ Resources:
         Variables:
           BUCKET_NAME: psychometrictest
 
-      # —————— Permisos para S3 GetObject ——————
+      # —————— Permisos S3 GetObject ——————
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -31,6 +31,15 @@ Resources:
                 - s3:GetObject
               Resource:
                 - arn:aws:s3:::psychometrictest/*
+
+      # —————— Exponer en API Gateway ——————
+      Events:
+        GetPsychometricTest:
+          Type: HttpApi
+          Properties:
+            Path: /psychometric            # coincide con tu URL
+            Method: get
+            
 
     Metadata:
       Dockerfile: Dockerfile

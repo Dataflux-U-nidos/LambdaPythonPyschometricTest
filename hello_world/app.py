@@ -10,23 +10,17 @@ s3 = boto3.client('s3')
 BUCKET_NAME = os.environ.get('BUCKET_NAME', 'psychometrictest')
 
 def lambda_handler(event, context):
-    """
-    Espera un evento con al menos:
-    {
-      "version": 1
-    }
-    Recupera V{version}/psychometric-test.json de S3 y lo devuelve como JSON.
-    """
-    # 1. Extraer y validar la versión
-    version = event.get('version')
-    if version is None:
+    # 1. Obtener version de query params
+    q = event.get('queryStringParameters') or {}
+    version = q.get('version')
+    if not version:
         return {
             'statusCode': 400,
-            'body': json.dumps({'error': 'Falta el atributo "version" en el evento'})
+            'body': json.dumps({'error': 'Falta el parámetro ?version=X'})
         }
 
-    # 2. Construir la key
     key = f"V{version}/psychometric-test.json"
+
 
     try:
         # 3. Traer el objeto de S3
