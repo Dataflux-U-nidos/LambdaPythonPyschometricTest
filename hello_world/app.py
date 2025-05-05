@@ -16,7 +16,8 @@ def lambda_handler(event, context):
     if not version:
         return {
             'statusCode': 400,
-            'body': json.dumps({'error': 'Falta el parámetro ?version=X'})
+            'headers': {'Content-Type': 'application/json; charset=utf-8'},
+            'body': json.dumps({'error': 'Falta el parámetro ?version=X'}, ensure_ascii=False)
         }
 
     key = f"V{version}/psychometric-test.json"
@@ -35,11 +36,8 @@ def lambda_handler(event, context):
         # 5. Retornar el esquema procesado
         return {
             'statusCode': 200,
-            'headers': {'Content-Type': 'application/json'},
-            'body': json.dumps({
-                'version': version,
-                'schema': schema
-            })
+            'headers': {'Content-Type': 'application/json; charset=utf-8'},
+            'body': json.dumps(schema, ensure_ascii=False)
         }
 
     except ClientError as e:
@@ -47,14 +45,16 @@ def lambda_handler(event, context):
         code = e.response['Error']['Code']
         message = e.response['Error']['Message']
         return {
-            'statusCode': 500,
+             'statusCode': 500,
+            'headers': {'Content-Type': 'application/json; charset=utf-8'},
             'body': json.dumps({
                 'error': f"S3 ClientError: {code} - {message}"
-            })
+            }, ensure_ascii=False)
         }
     except json.JSONDecodeError:
         # Manejo de error de parseo de JSON
         return {
             'statusCode': 500,
-            'body': json.dumps({'error': 'El contenido no es un JSON válido'})
+            'headers': {'Content-Type': 'application/json; charset=utf-8'},
+            'body': json.dumps({'error': 'El contenido no es un JSON válido'}, ensure_ascii=False)
         }
